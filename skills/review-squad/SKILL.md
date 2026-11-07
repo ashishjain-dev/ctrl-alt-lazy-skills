@@ -18,7 +18,7 @@ This skill only runs when invoked explicitly (`disable-model-invocation: true`),
 1. **Agents installed?** Check for these definitions in `.claude/agents/` (project) or `~/.claude/agents/` (user): `security-reviewer`, `performance-reviewer`, `test-coverage-reviewer`, `contract-reviewer`, `devils-advocate`.
    If any are missing, list them, show the install command below, and **stop**:
    ```bash
-   git clone https://github.com/jainashish1691/ctrl-alt-lazy-skills
+   git clone https://github.com/ashishjain-dev/ctrl-alt-lazy-skills
    mkdir -p ~/.claude/agents && cp ctrl-alt-lazy-skills/agents/review-squad/*.md ~/.claude/agents/
    ```
 2. **Mode.** If `$ARGUMENTS` contains `--team`, use team mode (step 3b). Otherwise use subagent mode (step 3a).

@@ -9,7 +9,7 @@ Written for senior engineers and architects: every skill matches your repo's exi
 ## Install (the lazy way)
 
 ```bash
-git clone https://github.com/jainashish1691/ctrl-alt-lazy-skills
+git clone https://github.com/ashishjain-dev/ctrl-alt-lazy-skills
 cd ctrl-alt-lazy-skills
 ./install.sh summarize-changes   # one skill
 ./install.sh --all               # or everything
@@ -22,7 +22,7 @@ Then open Claude Code and type `/summarize-changes`, or just ask "what did I cha
 ```bash
 mkdir -p ~/.claude/skills/summarize-changes
 curl -o ~/.claude/skills/summarize-changes/SKILL.md \
-  https://raw.githubusercontent.com/jainashish1691/ctrl-alt-lazy-skills/main/skills/summarize-changes/SKILL.md
+  https://raw.githubusercontent.com/ashishjain-dev/ctrl-alt-lazy-skills/main/skills/summarize-changes/SKILL.md
 ```
 
 Skills install to `~/.claude/skills/` (all your projects). To share one with your team instead, copy it into your repo's `.claude/skills/` folder and commit it.
