@@ -1,6 +1,6 @@
 # Review squad (subagents and agent-team teammates)
 
-From reel #05: *"You've become the copy-paste guy between your AI terminals."*
+From reel #06: *"AI reviewers that argue, so you don't have to."*
 
 Five read-only reviewers that share one severity scale (HIGH / MEDIUM / LOW) and one report shape, so a lead session can merge their findings without translation:
 

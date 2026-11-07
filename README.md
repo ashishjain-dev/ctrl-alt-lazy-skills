@@ -38,7 +38,7 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 
 | Reel | Agents | What they do |
 |---|---|---|
-| #05 | [`review-squad`](agents/review-squad/) | Five read-only reviewers (security, performance, test coverage, API/event/DB contracts, devil's advocate) that share one severity scale and report format. Run them as parallel subagents, or as an agent team where they message each other and try to disprove each other's findings. Includes cross-session messaging prompts and safe settings |
+| #06 | [`review-squad`](agents/review-squad/) | Five read-only reviewers (security, performance, test coverage, API/event/DB contracts, devil's advocate) that share one severity scale and report format. Run them as parallel subagents, or as an agent team where they message each other and try to disprove each other's findings. Includes cross-session messaging prompts and safe settings |
 
 ## Hooks
 
