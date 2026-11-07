@@ -13,8 +13,10 @@ Design rules
 - Idempotent: a resumed session overwrites its own archive (the newest transcript is a
   superset), and the index gets a fresh line each time it ends.
 - Atomic: write to a temp file, fsync, then rename, so a crash never leaves half a file.
-- Private: archive directory is created with 0700, files with 0600. Transcripts contain
-  your code, prompts and command output; treat the archive like source code.
+- Private: a new archive directory is created with 0700, files with 0600 (POSIX only; on
+  Windows, access comes from the folder's ACLs). An existing directory's permissions are
+  left alone. Transcripts contain your code, prompts and command output; treat the
+  archive like source code.
 
 Config (environment variables, all optional)
   CLAUDE_SESSION_ARCHIVE_DIR   archive root (default: ~/.claude-session-archive)
@@ -97,18 +99,22 @@ def main():
     root = os.path.expanduser(os.environ.get("CLAUDE_SESSION_ARCHIVE_DIR", "~/.claude-session-archive"))
     project = slug(os.path.basename(os.path.normpath(cwd)))
     dest_dir = os.path.join(root, project)
+    root_existed = os.path.isdir(root)
     os.makedirs(dest_dir, mode=0o700, exist_ok=True)
-    try:
-        os.chmod(root, 0o700)
-    except OSError:
-        pass
+    if not root_existed:  # only tighten a folder we created, never one the user already had
+        try:
+            os.chmod(root, 0o700)
+        except OSError:
+            pass
     dest = os.path.join(dest_dir, f"{slug(session_id, 80)}.jsonl.gz")
 
     fd, tmp = tempfile.mkstemp(prefix=".tmp-", dir=dest_dir)
     try:
-        with os.fdopen(fd, "wb") as raw, gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as gz, \
-                open(transcript, "rb") as src:
-            shutil.copyfileobj(src, gz, 1024 * 1024)
+        with os.fdopen(fd, "wb") as raw:
+            with gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as gz, open(transcript, "rb") as src:
+                shutil.copyfileobj(src, gz, 1024 * 1024)
+            raw.flush()
+            os.fsync(raw.fileno())  # data on disk before the rename makes it visible
         os.chmod(tmp, 0o600)
         os.replace(tmp, dest)
     except Exception as e:

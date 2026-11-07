@@ -20,7 +20,10 @@ SRC = os.path.join(HERE, "archive_session.py")
 CLAUDE_DIR = os.environ.get("CLAUDE_CONFIG_DIR", os.path.expanduser("~/.claude"))
 DEST = os.path.join(CLAUDE_DIR, "hooks", "archive_session.py")
 SETTINGS = os.path.join(CLAUDE_DIR, "settings.json")
-MARK = "archive_session.py"
+
+def ours(cmd):
+    """True only for a command that runs OUR installed script, not any file sharing its name."""
+    return os.path.normcase(DEST) in os.path.normcase(str(cmd))
 
 def load():
     if not os.path.exists(SETTINGS):
@@ -33,7 +36,7 @@ def strip_ours(settings):
     groups = settings.get("hooks", {}).get("SessionEnd", [])
     kept = []
     for g in groups:
-        hooks = [h for h in g.get("hooks", []) if MARK not in str(h.get("command", ""))]
+        hooks = [h for h in g.get("hooks", []) if not ours(h.get("command", ""))]
         if hooks:
             kept.append({**g, "hooks": hooks})
     if kept:
@@ -51,9 +54,15 @@ def main():
     except ValueError as e:
         sys.exit(f"{SETTINGS} is not valid JSON ({e}). Fix it first; nothing was changed.")
 
+    if "--uninstall" in args and not os.path.exists(SETTINGS) and not os.path.exists(DEST):
+        print("Nothing to uninstall.")
+        return
+
     settings = strip_ours(settings)
     if "--uninstall" not in args:
-        cmd = f'python3 "{DEST}"'
+        # Use the interpreter running this installer: it is known to exist. A bare "python3"
+        # is often missing on Windows (or is the Microsoft Store stub) and fails silently.
+        cmd = f'"{sys.executable}" "{DEST}"'
         settings.setdefault("hooks", {}).setdefault("SessionEnd", []).append(
             {"hooks": [{"type": "command", "command": cmd}]})
 
@@ -76,7 +85,7 @@ def main():
         os.chmod(DEST, 0o755)
         print(f"Installed hook script to {DEST}")
         print("Registered SessionEnd hook. New sessions are archived when they end.")
-        print("Archive: " + os.environ.get("CLAUDE_SESSION_ARCHIVE_DIR", "~/.claude-session-archive"))
+        print("Archive: $CLAUDE_SESSION_ARCHIVE_DIR as seen by Claude Code, default ~/.claude-session-archive")
     tmp = SETTINGS + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         f.write(out)

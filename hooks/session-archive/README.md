@@ -36,7 +36,7 @@ python3 hooks/session-archive/install.py --dry-run   # preview the settings chan
 python3 hooks/session-archive/install.py             # install (backs up settings.json first)
 ```
 
-It's idempotent, keeps all your existing settings and hooks, and can be removed with `--uninstall`. Run `/hooks` in Claude Code to confirm it's registered. Requires `python3` on your PATH.
+It's idempotent, keeps all your existing settings and hooks, and can be removed with `--uninstall`. Run `/hooks` in Claude Code to confirm it's registered. The hook runs with the same Python that ran `install.py`, so on Windows use `python hooks/session-archive/install.py` if `python3` isn't available.
 
 ## What you get
 
@@ -71,7 +71,7 @@ zcat ~/.claude-session-archive/payments-api/<session_id>.jsonl.gz | less
 
 - **Never blocks Claude Code.** SessionEnd hooks can't block anyway, and every error is logged to stderr with exit 0.
 - **Atomic and idempotent.** It writes a temp file, then renames it. A resumed session overwrites its own archive, because the newer transcript contains everything the older one did.
-- **Private by default.** The folder is `0700` and files are `0600`.
+- **Private by default.** On macOS and Linux, a folder it creates is `0700` and files are `0600`. It never changes the permissions of a folder that already exists. On Windows, file permissions come from the folder's ACLs, so put the archive somewhere only your account can read (the default under your user profile is fine).
 - **Format-agnostic.** It copies the transcript as-is. The index's `first_prompt` is best-effort, because the transcript format is internal to Claude Code and can change between versions.
 
 ## Read this before you install it on a work machine
