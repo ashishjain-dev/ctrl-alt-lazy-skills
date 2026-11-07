@@ -34,6 +34,12 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 | #01 | [`summarize-changes`](skills/summarize-changes/SKILL.md) | Senior-reviewer pass on your diff or branch (`/summarize-changes main`): breaking API/event contracts, migration safety, concurrency, security and config risks with `file:line`, commit-split advice, Conventional Commit message, and a PR description with rollout and rollback |
 | #02 | [`write-tests`](skills/write-tests/SKILL.md) | `/write-tests src/cart.js` writes high-value tests in your repo's own framework: right test level, invariants and property tests, failure modes, idempotency and concurrency, characterization mode for legacy code, run twice for flakiness |
 
+## Agents
+
+| Reel | Agents | What they do |
+|---|---|---|
+| #05 | [`review-squad`](agents/review-squad/) | Five read-only reviewers (security, performance, test coverage, API/event/DB contracts, devil's advocate) that share one severity scale and report format. Run them as parallel subagents, or as an agent team where they message each other and try to disprove each other's findings. Includes cross-session messaging prompts and safe settings |
+
 ## Hooks
 
 | Reel | Hook | What it does |
