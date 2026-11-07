@@ -17,7 +17,7 @@ Each one cites `file:line`, marks guesses as **[inferred]**, and ends with a ver
 ## Install
 
 ```bash
-git clone https://github.com/jainashish1691/ctrl-alt-lazy-skills
+git clone https://github.com/ashishjain-dev/ctrl-alt-lazy-skills
 mkdir -p ~/.claude/agents
 cp ctrl-alt-lazy-skills/agents/review-squad/*.md ~/.claude/agents/     # all your projects
 # or, to share with your team: copy into <repo>/.claude/agents/ and commit

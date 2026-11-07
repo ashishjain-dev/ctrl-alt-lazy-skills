@@ -30,7 +30,7 @@ Use the hook when you also want an archive outside `~/.claude` (backups, a new m
 ## Install
 
 ```bash
-git clone https://github.com/jainashish1691/ctrl-alt-lazy-skills
+git clone https://github.com/ashishjain-dev/ctrl-alt-lazy-skills
 cd ctrl-alt-lazy-skills
 python3 hooks/session-archive/install.py --dry-run   # preview the settings change
 python3 hooks/session-archive/install.py             # install (backs up settings.json first)
