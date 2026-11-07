@@ -30,6 +30,7 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 | Reel | Skill | What it does |
 |---|---|---|
 | #01 | [`summarize-changes`](skills/summarize-changes/SKILL.md) | Summarizes your uncommitted changes, flags risky edits, and writes a commit message that isn't "fix" |
+| #02 | [`write-tests`](skills/write-tests/SKILL.md) | `/write-tests src/cart.js` writes unit tests in your repo's own framework and runs them until green |
 
 More coming with every reel. Follow [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy) so you don't have to check.
 
