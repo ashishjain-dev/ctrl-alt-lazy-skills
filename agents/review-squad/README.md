@@ -25,6 +25,24 @@ cp ctrl-alt-lazy-skills/agents/review-squad/*.md ~/.claude/agents/     # all you
 
 Claude Code picks up edits within a few seconds. If `~/.claude/agents/` didn't exist when your session started, restart Claude Code once.
 
+## Use 0: one command (recommended)
+
+Install the [`review-squad` skill](../../skills/review-squad/SKILL.md) too:
+
+```bash
+./install.sh review-squad      # from the repo root
+```
+
+Then, in any repo:
+
+```text
+/review-squad main             # this branch vs main
+/review-squad 142              # a pull request (needs gh)
+/review-squad main --team      # as an agent team (experimental)
+```
+
+It scopes the change once, runs the four specialists in parallel, lets the devil's advocate challenge every HIGH and MEDIUM, and returns one merged verdict. It only runs when you type it, because five agents cost roughly five reviews.
+
 ## Use 1: as subagents (works today, cheapest)
 
 Each reviewer runs in its own context and reports back to your session:

@@ -1,7 +1,7 @@
 ---
 name: summarize-changes
 description: Review a change set like a senior reviewer before it ships. Summarizes intent, flags breaking changes and production risk (API contracts, schema and data migrations, concurrency, security, config, observability), proposes commit splits and a Conventional Commit message, and drafts a PR description with rollout and rollback notes. Use for "what did I change", commit messages, PR descriptions, or pre-merge self-review.
-argument-hint: [base-ref, default: uncommitted changes]
+argument-hint: "[base-ref, default: uncommitted changes]"
 ---
 
 # Summarize changes (senior review mode)

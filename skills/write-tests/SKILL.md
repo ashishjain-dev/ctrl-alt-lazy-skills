@@ -1,7 +1,7 @@
 ---
 name: write-tests
 description: Write high-value tests for a file, class or module the way a senior engineer would. Matches the repo's existing framework and conventions, picks the right test level, covers invariants, edge cases, failure modes, concurrency and idempotency, pins legacy behaviour with characterization tests, and runs the tests until they are green and non-flaky. Use when asked for tests, coverage, "is this tested?", or before refactoring risky code.
-argument-hint: [path | Class | Class#method] [--characterize]
+argument-hint: "[path | Class | Class#method] [--characterize]"
 ---
 
 # Write tests (senior mode)

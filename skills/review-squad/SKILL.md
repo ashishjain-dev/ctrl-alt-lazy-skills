@@ -1,7 +1,7 @@
 ---
 name: review-squad
 description: One-command multi-agent code review. Spawns the review-squad agents (security, performance, test coverage, contracts) in parallel on a branch, PR or path, has the devils-advocate challenge their findings, then merges everything into one de-duplicated, severity-ranked verdict. Run explicitly with /review-squad.
-argument-hint: [base-ref | PR number | path] [--team]
+argument-hint: "[base-ref | PR number | path] [--team]"
 disable-model-invocation: true
 ---
 
