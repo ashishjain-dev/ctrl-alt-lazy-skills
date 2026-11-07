@@ -2,7 +2,9 @@
 
 > If it takes 5 mins, I'll spend 2 hrs automating it.
 
-Ready-to-use [Claude Code skills](https://code.claude.com/docs/en/skills) from the **[@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy)** reels. Each reel shows the idea in 30 seconds; the full `SKILL.md` lives here.
+Production-grade [Claude Code skills](https://code.claude.com/docs/en/skills) from the **[@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy)** reels. Each reel shows the idea in 30 seconds; the full `SKILL.md` lives here.
+
+Written for senior engineers and architects: every skill matches your repo's existing conventions, reasons about production risk (contracts, data, concurrency, security, operability), backs findings with `file:line` evidence, and is read-only or non-destructive unless you say otherwise. Lazy, not sloppy.
 
 ## Install (the lazy way)
 
@@ -29,8 +31,8 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 
 | Reel | Skill | What it does |
 |---|---|---|
-| #01 | [`summarize-changes`](skills/summarize-changes/SKILL.md) | Summarizes your uncommitted changes, flags risky edits, and writes a commit message that isn't "fix" |
-| #02 | [`write-tests`](skills/write-tests/SKILL.md) | `/write-tests src/cart.js` writes unit tests in your repo's own framework and runs them until green |
+| #01 | [`summarize-changes`](skills/summarize-changes/SKILL.md) | Senior-reviewer pass on your diff or branch (`/summarize-changes main`): breaking API/event contracts, migration safety, concurrency, security and config risks with `file:line`, commit-split advice, Conventional Commit message, and a PR description with rollout and rollback |
+| #02 | [`write-tests`](skills/write-tests/SKILL.md) | `/write-tests src/cart.js` writes high-value tests in your repo's own framework: right test level, invariants and property tests, failure modes, idempotency and concurrency, characterization mode for legacy code, run twice for flakiness |
 
 More coming with every reel. Follow [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy) so you don't have to check.
 
