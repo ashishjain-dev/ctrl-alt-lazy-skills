@@ -18,9 +18,10 @@ Each one cites `file:line`, marks guesses as **[inferred]**, and ends with a ver
 
 ```bash
 git clone https://github.com/ashishjain-dev/ctrl-alt-lazy-skills
-mkdir -p ~/.claude/agents
-cp ctrl-alt-lazy-skills/agents/review-squad/*.md ~/.claude/agents/     # all your projects
-# or, to share with your team: copy into <repo>/.claude/agents/ and commit
+cd ctrl-alt-lazy-skills
+./install.sh --agents review-squad     # all your projects; backs up any agent it replaces
+# or, to share with your team: copy the five agent files (not this README) into
+# <repo>/.claude/agents/ and commit
 ```
 
 Claude Code picks up edits within a few seconds. If `~/.claude/agents/` didn't exist when your session started, restart Claude Code once.
@@ -70,7 +71,7 @@ Create an agent team to review this branch against main. Spawn teammates
 using the security-reviewer, performance-reviewer, test-coverage-reviewer,
 contract-reviewer and devils-advocate agent types. Have them message each
 other when a finding crosses into another's area, and have the
-devils-advocate try to disprove every HIGH. Wait for all of them, then give
+devils-advocate try to disprove every HIGH and MEDIUM. Wait for all of them, then give
 me one merged verdict.
 ```
 

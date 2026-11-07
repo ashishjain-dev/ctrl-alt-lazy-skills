@@ -13,6 +13,7 @@ git clone https://github.com/ashishjain-dev/ctrl-alt-lazy-skills
 cd ctrl-alt-lazy-skills
 ./install.sh summarize-changes   # one skill
 ./install.sh --all               # or everything
+./install.sh --agents review-squad   # agent packs go to ~/.claude/agents
 ```
 
 Then open Claude Code and type `/summarize-changes`, or just ask "what did I change?" and Claude picks it up on its own.
@@ -33,7 +34,7 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 |---|---|---|
 | #01 | [`summarize-changes`](skills/summarize-changes/SKILL.md) | Senior-reviewer pass on your diff or branch (`/summarize-changes main`): breaking API/event contracts, migration safety, concurrency, security and config risks with `file:line`, commit-split advice, Conventional Commit message, and a PR description with rollout and rollback |
 | #02 | [`write-tests`](skills/write-tests/SKILL.md) | `/write-tests src/cart.js` writes high-value tests in your repo's own framework: right test level, invariants and property tests, failure modes, idempotency and concurrency, characterization mode for legacy code, run twice for flakiness |
-| #07 | [`review-squad`](skills/review-squad/SKILL.md) | `/review-squad main` spawns the 4 specialist reviewer agents in parallel, has the devil's advocate challenge their findings, and merges everything into one de-duplicated verdict (BLOCK / FIX BEFORE MERGE / OK / CLEAN). `--team` runs them as an agent team that messages each other. Needs the [review-squad agents](agents/review-squad/) installed |
+| #07 | [`review-squad`](skills/review-squad/SKILL.md) | `/review-squad main` spawns the 4 specialist reviewer agents in parallel, has the devil's advocate challenge their findings, and merges everything into one de-duplicated verdict (BLOCK / FIX BEFORE MERGE / OK / CLEAN). `--team` runs them as an agent team that messages each other. Needs the [review-squad agents](agents/review-squad/) installed (`./install.sh --agents review-squad`) |
 
 ## Agents
 

@@ -10,7 +10,7 @@ Give a reviewer-grade read of a change set in under a minute: what it does, what
 
 ## 1. Scope the diff
 
-- No argument: uncommitted work. Run `git status --porcelain=v1`, `git diff --stat`, `git diff`, `git diff --staged`.
+- No argument: uncommitted work. Run `git status --porcelain=v1`, `git diff --stat HEAD`, `git diff`, `git diff --staged`. `git diff` doesn't show untracked files, so also read every untracked file that `git status` lists as `??` (skip build output, caches and anything `.gitignore` should cover; say if one looks like it should be ignored or contains secrets).
 - With an argument (`main`, `origin/develop`, a SHA): branch review. Run `git diff --stat $ARGUMENTS...HEAD`, `git diff $ARGUMENTS...HEAD`, and `git log --oneline $ARGUMENTS..HEAD`.
 - For a large diff, start from `--stat`, then read the riskiest files in full rather than skimming everything.
 - Treat lockfiles, generated code, snapshots and vendored files as one line each ("lockfile updated: 3 direct deps changed"), and still name any **direct** dependency or major-version change.

@@ -8,7 +8,7 @@ argument-hint: "[path | Class | Class#method] [--characterize]"
 
 Write the tests a strong reviewer would ask for on $ARGUMENTS: few, sharp, and guarding real behaviour. Optimise for **defects caught per line of test**, not coverage percentage.
 
-No target given: offer the most recently changed source files (`git diff --name-only HEAD~1`) and ask which one.
+No target given: offer the most recently changed source files and ask which one. Use uncommitted changes first (`git diff --name-only HEAD` plus untracked files from `git status --porcelain`), then the last commit (`git show --name-only --format= HEAD`, which also works in a repo with a single commit).
 
 ## 1. Understand before writing
 
