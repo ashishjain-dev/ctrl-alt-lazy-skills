@@ -1,6 +1,6 @@
 # Review squad (subagents and agent-team teammates)
 
-From reel #06: *"AI reviewers that argue, so you don't have to."*
+Featured in reel #06 (what agents are) and reel #07 (*"AI reviewers that argue, so you don't have to."*).
 
 Five read-only reviewers that share one severity scale (HIGH / MEDIUM / LOW) and one report shape, so a lead session can merge their findings without translation:
 
