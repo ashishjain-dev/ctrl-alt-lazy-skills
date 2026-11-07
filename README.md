@@ -34,6 +34,12 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 | #01 | [`summarize-changes`](skills/summarize-changes/SKILL.md) | Senior-reviewer pass on your diff or branch (`/summarize-changes main`): breaking API/event contracts, migration safety, concurrency, security and config risks with `file:line`, commit-split advice, Conventional Commit message, and a PR description with rollout and rollback |
 | #02 | [`write-tests`](skills/write-tests/SKILL.md) | `/write-tests src/cart.js` writes high-value tests in your repo's own framework: right test level, invariants and property tests, failure modes, idempotency and concurrency, characterization mode for legacy code, run twice for flakiness |
 
+## Hooks
+
+| Reel | Hook | What it does |
+|---|---|---|
+| #04 | [`session-archive`](hooks/session-archive/) | `SessionEnd` hook that archives every Claude Code session outside `~/.claude` (beats the ~30-day cleanup), with a searchable cross-project index. Atomic, idempotent, never blocks, private by default. Install: `python3 hooks/session-archive/install.py` |
+
 More coming with every reel. Follow [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy) so you don't have to check.
 
 ## How a skill works
