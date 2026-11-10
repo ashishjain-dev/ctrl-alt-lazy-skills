@@ -38,6 +38,8 @@ python3 hooks/session-archive/install.py             # install (backs up setting
 
 It's idempotent, keeps all your existing settings and hooks, and can be removed with `--uninstall`. Run `/hooks` in Claude Code to confirm it's registered. The hook runs with the same Python that ran `install.py`, so on Windows use `python hooks/session-archive/install.py` if `python3` isn't available.
 
+The script is installed to `~/.claude/hooks/session-archive/`. If you installed it before the shared installer existed (it used to live at `~/.claude/hooks/archive_session.py`), run the install command again: it moves it and replaces the old settings entry, so you don't end up with two. `python3 hooks/install.py session-archive` does the same thing.
+
 ## What you get
 
 ```

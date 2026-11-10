@@ -14,6 +14,7 @@ cd ctrl-alt-lazy-skills
 ./install.sh summarize-changes   # one skill
 ./install.sh --all               # or everything
 ./install.sh --agents review-squad   # agent packs go to ~/.claude/agents
+python3 hooks/install.py guardrails  # hooks go to ~/.claude/hooks (--list to see them all)
 ```
 
 Then open Claude Code and type `/summarize-changes`, or just ask "what did I change?" and Claude picks it up on its own.
@@ -45,10 +46,12 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 
 ## Hooks
 
+One installer for all of them (`python3 hooks/install.py --list`). Want your own? [Add a hook](hooks/README.md#add-your-own-hook) with a script and a 10-line `hook.json`.
+
 | Reel | Hook | What it does |
 |---|---|---|
-| #04 | [`session-archive`](hooks/session-archive/) | `SessionEnd` hook that archives every Claude Code session outside `~/.claude` (beats the ~30-day cleanup), with a searchable cross-project index. Atomic, idempotent, never blocks, private by default. Install: `python3 hooks/session-archive/install.py` |
-| #11 | [`guardrails`](hooks/guardrails/) | `PreToolUse` hook that stops irreversible commands before Claude runs them: `DROP TABLE`, `DELETE` without `WHERE`, `terraform destroy`, `kubectl delete` on prod, force-push to protected branches, `rm -rf` outside the project. Denies with a reason Claude acts on, asks for risky-but-legit ones, protects its own config, fails closed, keeps a redacted audit log. A seatbelt, not a sandbox. Install: `python3 hooks/guardrails/install.py` |
+| #04 | [`session-archive`](hooks/session-archive/) | `SessionEnd` hook that archives every Claude Code session outside `~/.claude` (beats the ~30-day cleanup), with a searchable cross-project index. Atomic, idempotent, never blocks, private by default. Install: `python3 hooks/install.py session-archive` |
+| #11 | [`guardrails`](hooks/guardrails/) | `PreToolUse` hook that stops irreversible commands before Claude runs them: `DROP TABLE`, `DELETE` without `WHERE`, `terraform destroy`, `kubectl delete` on prod, force-push to protected branches, `rm -rf` outside the project. Denies with a reason Claude acts on, asks for risky-but-legit ones, protects its own config, fails closed, keeps a redacted audit log. A seatbelt, not a sandbox. Install: `python3 hooks/install.py guardrails` |
 
 More coming with every reel. Follow [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy) so you don't have to check.
 

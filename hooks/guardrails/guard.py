@@ -293,7 +293,28 @@ def audit(cfg, event, decision):
         pass  # never block a decision because the log is unwritable
 
 
+def cli_test(args):
+    """guard.py --test '<command>'  or  guard.py --test-edit <path>: show the decision, change nothing."""
+    cwd = os.getcwd()
+    if args[0] == "--test-edit":
+        event = {"tool_name": "Edit", "cwd": cwd, "tool_input": {"file_path": os.path.abspath(args[1])}}
+    else:
+        event = {"tool_name": "Bash", "cwd": cwd, "tool_input": {"command": " ".join(args[1:])}}
+    decision = evaluate(event, load_config(cwd))
+    if not decision:
+        print("ALLOW  no rule matched (Claude Code's normal permission flow applies)")
+    else:
+        verdict, rule_id, why, instead = decision
+        print(f"{verdict.upper():<6} [{rule_id}] {why}" + (f"\n       Instead: {instead}" if instead else ""))
+    return 0
+
+
 def main():
+    if len(sys.argv) > 2 and sys.argv[1] in ("--test", "--test-edit"):
+        return cli_test(sys.argv[1:])
+    if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help"):
+        print(__doc__ + "\nTest a rule without Claude:\n  guard.py --test 'psql -c \"DROP TABLE x\"'\n  guard.py --test-edit ~/.claude/settings.json")
+        return 0
     raw = sys.stdin.read()
     cfg = {}
     try:

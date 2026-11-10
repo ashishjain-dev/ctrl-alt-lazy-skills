@@ -15,13 +15,14 @@ From reel #11 on [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy).
 
 ```bash
 git clone https://github.com/ashishjain-dev/ctrl-alt-lazy-skills
-python3 ctrl-alt-lazy-skills/hooks/guardrails/install.py
+cd ctrl-alt-lazy-skills
+python3 hooks/install.py guardrails     # same as: python3 hooks/guardrails/install.py
 ```
 
 - Copies `guard.py` and `rules.json` to `~/.claude/hooks/guardrails/` and registers the hook in `~/.claude/settings.json` (all projects). Your existing settings and hooks are kept, a timestamped backup is made first, and running it again just updates it.
 - `--fail-closed` also adds `"onFailure": "block"`, so a crashed or timed-out hook blocks the call instead of letting it through (needs Claude Code v2.1.295+).
 - `--dry-run` prints the resulting settings without changing anything. `--uninstall` removes it.
-- Restart open Claude Code sessions, then check with `/hooks`.
+- Restart open Claude Code sessions, then check with `/hooks`. The shared installer is explained in [hooks/README.md](../README.md).
 
 Needs Python 3.8+. No other dependencies (no `jq`).
 
@@ -73,6 +74,37 @@ Overrides are merged on top of `rules.json`:
 }
 ```
 
+### Add a rule (no code)
+
+Add an entry to `"rules"` in `~/.claude/guardrails.json` or `<repo>/.claude/guardrails.json`:
+
+| Field | Meaning |
+|---|---|
+| `id` | Short name, shown to Claude and in the audit log. Reuse a built-in id in `"disable"` to switch that one off |
+| `pattern` | Python regex, matched case-insensitively against the **whole** Bash command (chained commands included) |
+| `decision` | `"deny"` (never runs) or `"ask"` (you confirm). Default `deny` |
+| `reason` | Why it's dangerous. Claude reads this |
+| `instead` | What Claude should do instead. Claude usually follows it |
+
+Then test it without starting Claude (quote the command so your shell doesn't split it):
+
+```bash
+python3 ~/.claude/hooks/guardrails/guard.py --test 'npm publish'
+# ASK    [no-publish] publishing a package
+#        Instead: Bump the version in a PR first.
+python3 ~/.claude/hooks/guardrails/guard.py --test 'git status'
+# ALLOW  no rule matched (Claude Code's normal permission flow applies)
+python3 ~/.claude/hooks/guardrails/guard.py --test-edit ~/.claude/settings.json
+```
+
+Run it from inside a repo to pick up that repo's `.claude/guardrails.json`.
+
+### Add a check in code
+
+Some checks don't fit a regex (resolving paths, reading the current git branch). Write a function in `guard.py` that takes the split command (`argv`) and returns a reason string or `None`, call it from `evaluate()` next to `check_rm` and `check_git`, give it a rule id so it can be disabled, and add a test in `tests/test_guard.py`. Then re-run `python3 hooks/install.py guardrails` to copy it into place.
+
+### Turn it off
+
 Turn it off for one session by starting Claude Code with `CLAUDE_GUARDRAILS=off claude`. Claude can't do this from inside a session: the variable must be set in the environment that launches Claude Code, not in a command Claude runs.
 
 ## Audit log
@@ -95,6 +127,8 @@ tail -5 ~/.claude/guardrails/audit.jsonl
 python3 -m unittest discover -s hooks/guardrails/tests -v
 ```
 
+Want a different kind of hook (auto-format after edits, a ping when Claude is done)? See [Add your own hook](../README.md#add-your-own-hook).
+
 ## Read before you install
 
-It's ~350 lines of Python. Read `guard.py` and `rules.json` first: that's the one non-lazy step.
+It's ~360 lines of Python. Read `guard.py` and `rules.json` first: that's the one non-lazy step.

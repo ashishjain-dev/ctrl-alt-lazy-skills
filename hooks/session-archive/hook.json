@@ -1,0 +1,11 @@
+{
+  "name": "session-archive",
+  "description": "Archives every Claude Code session outside ~/.claude when it ends, with a searchable index",
+  "script": "archive_session.py",
+  "files": ["archive_session.py"],
+  "register": [
+    {"event": "SessionEnd"}
+  ],
+  "after_install": "Archive: $CLAUDE_SESSION_ARCHIVE_DIR as seen by Claude Code, default ~/.claude-session-archive",
+  "legacy": ["hooks/archive_session.py"]
+}
