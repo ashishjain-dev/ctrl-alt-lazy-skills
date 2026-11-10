@@ -1,0 +1,64 @@
+{
+  "protected_branches": ["main", "master", "develop", "release/.*", "prod(uction)?"],
+  "prod_context_pattern": "prod|prd|live",
+  "fail_open": false,
+  "disable": [],
+  "rules": [
+    {
+      "id": "sql-drop",
+      "pattern": "\\b(DROP\\s+(TABLE|DATABASE|SCHEMA|INDEX|VIEW|USER|ROLE)|TRUNCATE(\\s+TABLE)?\\s+[\"`\\w])",
+      "decision": "deny",
+      "reason": "destructive SQL (DROP or TRUNCATE)",
+      "instead": "Write it as a reviewed migration with a backup or rollback plan, and let a human run it."
+    },
+    {
+      "id": "sql-delete-no-where",
+      "pattern": "\\bDELETE\\s+FROM\\s+[\"`\\w.]+\\s*(;|\"|'|$)",
+      "decision": "deny",
+      "reason": "DELETE without a WHERE clause wipes the whole table",
+      "instead": "Add a WHERE clause and show me a SELECT COUNT(*) of what it would delete first."
+    },
+    {
+      "id": "db-drop-tools",
+      "pattern": "\\b(dropdb|mongo(sh)?\\b.*dropDatabase|redis-cli\\b.*\\bFLUSH(ALL|DB)|prisma\\s+migrate\\s+reset|rails\\s+db:(drop|reset)|rake\\s+db:(drop|reset)|manage\\.py\\s+flush|flyway\\b.*\\bclean|liquibase\\b.*\\bdrop-all)\\b",
+      "decision": "deny",
+      "reason": "a command that drops or wipes a whole database",
+      "instead": "Tell me which environment you meant; I'll run it myself after checking DATABASE_URL."
+    },
+    {
+      "id": "terraform-destroy",
+      "pattern": "\\b(terraform|tofu|terragrunt)\\b.*\\b(destroy|apply\\b.*-auto-approve|apply\\b.*-destroy)",
+      "decision": "deny",
+      "reason": "infrastructure destroy or unreviewed apply",
+      "instead": "Run terraform plan and show me the diff."
+    },
+    {
+      "id": "git-discard",
+      "pattern": "\\bgit\\b.*\\b(reset\\s+--hard|clean\\s+-[a-zA-Z]*f|checkout\\s+--\\s+\\.|restore\\s+(--staged\\s+)?--worktree\\s+\\.|stash\\s+(drop|clear))",
+      "decision": "ask",
+      "reason": "this discards uncommitted work (and git clean can delete your .env)",
+      "instead": "Commit or stash first, or list exactly what would be lost."
+    },
+    {
+      "id": "pipe-to-shell",
+      "pattern": "\\b(curl|wget)\\b[^|]*\\|\\s*(sudo\\s+)?(ba|z|da)?sh\\b",
+      "decision": "ask",
+      "reason": "downloading and running a script in one step",
+      "instead": "Download it, show me the script, then run it."
+    },
+    {
+      "id": "disk-wipe",
+      "pattern": "\\b(mkfs(\\.\\w+)?|dd\\b.*\\bof=/dev/|chmod\\s+-R\\s+777\\s+/|chown\\s+-R\\s+\\S+\\s+/(\\s|$))",
+      "decision": "deny",
+      "reason": "a command that can wipe a disk or break system permissions",
+      "instead": "Explain what you are trying to fix; I'll do it by hand."
+    },
+    {
+      "id": "self-protect-bash",
+      "pattern": "(>|\\btee\\b|\\bsed\\s+-i|\\bmv\\b|\\bcp\\b|\\brm\\b|\\bchmod\\b|\\bpython3?\\b|\\bnode\\b|\\bperl\\b).*(guardrails\\.json|\\.claude/settings(\\.local)?\\.json|guardrails/(guard\\.py|rules\\.json))",
+      "decision": "ask",
+      "reason": "a shell command that may change the guardrails or Claude Code settings",
+      "instead": "Make this change yourself if you meant it."
+    }
+  ]
+}

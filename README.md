@@ -48,6 +48,7 @@ Skills install to `~/.claude/skills/` (all your projects). To share one with you
 | Reel | Hook | What it does |
 |---|---|---|
 | #04 | [`session-archive`](hooks/session-archive/) | `SessionEnd` hook that archives every Claude Code session outside `~/.claude` (beats the ~30-day cleanup), with a searchable cross-project index. Atomic, idempotent, never blocks, private by default. Install: `python3 hooks/session-archive/install.py` |
+| #11 | [`guardrails`](hooks/guardrails/) | `PreToolUse` hook that stops irreversible commands before Claude runs them: `DROP TABLE`, `DELETE` without `WHERE`, `terraform destroy`, `kubectl delete` on prod, force-push to protected branches, `rm -rf` outside the project. Denies with a reason Claude acts on, asks for risky-but-legit ones, protects its own config, fails closed, keeps a redacted audit log. A seatbelt, not a sandbox. Install: `python3 hooks/guardrails/install.py` |
 
 More coming with every reel. Follow [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy) so you don't have to check.
 
