@@ -1,0 +1,11 @@
+{
+  "name": "guardrails",
+  "description": "Stops irreversible commands (DROP TABLE, terraform destroy, rm -rf outside the project...) before Claude runs them",
+  "script": "guard.py",
+  "files": ["guard.py", "rules.json"],
+  "register": [
+    {"event": "PreToolUse", "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit", "timeout": 10}
+  ],
+  "fail_closed": true,
+  "after_install": "Overrides: ~/.claude/guardrails.json (you) or <repo>/.claude/guardrails.json (team). Test a rule: python3 ~/.claude/hooks/guardrails/guard.py --test '<command>'"
+}
