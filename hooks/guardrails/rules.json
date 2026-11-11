@@ -60,5 +60,35 @@
       "reason": "a shell command that may change the guardrails or Claude Code settings",
       "instead": "Make this change yourself if you meant it."
     }
+  ],
+  "checks": [
+    {
+      "id": "force-push",
+      "decision": "deny",
+      "reason": "force-push to a protected branch",
+      "instead": "Push to a branch and open a PR. Use --force-with-lease on your own branch."
+    },
+    {
+      "id": "rm-recursive",
+      "decision": "deny",
+      "reason": "recursive rm on a dangerous path or outside the project",
+      "instead": "Delete specific paths inside the project, or ask me to do it."
+    },
+    {
+      "id": "kubectl-prod",
+      "decision": "deny",
+      "reason": "destructive kubectl command on a prod context",
+      "instead": "Show me the exact command and target; I'll run it.",
+      "no_context": {
+        "decision": "ask",
+        "reason": "kubectl delete with no explicit --context (it runs on whatever context is current)"
+      }
+    },
+    {
+      "id": "self-protect",
+      "decision": "ask",
+      "reason": "edit to the guardrails config or Claude Code settings (hooks and permissions live there)",
+      "instead": "Make this change yourself if you meant it."
+    }
   ]
 }

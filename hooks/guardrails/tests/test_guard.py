@@ -1,6 +1,8 @@
 """Tests for guard.py. Run: python3 -m unittest discover -s hooks/guardrails/tests -v"""
 import json
 import os
+import runpy
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -9,12 +11,12 @@ import unittest
 GUARD = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "guard.py")
 
 
-def run(tool_input, tool="Bash", cwd=None, env=None, raw=None):
+def run(tool_input, tool="Bash", cwd=None, env=None, raw=None, guard=None):
     cwd = cwd or PROJECT
     event = {"session_id": "t", "cwd": cwd, "hook_event_name": "PreToolUse",
              "tool_name": tool, "tool_input": tool_input}
     e = dict(os.environ, CLAUDE_CONFIG_DIR=CLAUDE_DIR, **(env or {}))
-    p = subprocess.run([sys.executable, GUARD], input=raw if raw is not None else json.dumps(event),
+    p = subprocess.run([sys.executable, guard or GUARD], input=raw if raw is not None else json.dumps(event),
                        capture_output=True, text=True, env=e, cwd=cwd)
     out = json.loads(p.stdout) if p.stdout.strip() else None
     decision = out["hookSpecificOutput"]["permissionDecision"] if out else None
@@ -133,6 +135,79 @@ class Config(unittest.TestCase):
             log = f.read()
         self.assertIn("sql-drop", log)
         self.assertNotIn("hunter2", log)
+
+
+def project_with(name, override):
+    """A project dir whose .claude/guardrails.json is `override`."""
+    p = os.path.join(TMP, name)
+    os.makedirs(os.path.join(p, ".claude"))
+    with open(os.path.join(p, ".claude", "guardrails.json"), "w") as f:
+        json.dump(override, f)
+    return p
+
+
+class Checks(unittest.TestCase):
+    """The 4 code checks take their decision, reason and instead from "checks" in rules.json."""
+
+    def test_rules_json_lists_every_check_with_builtin_values(self):
+        builtin = runpy.run_path(GUARD)["DEFAULT_CHECKS"]  # no import, so no __pycache__ in the repo
+        with open(os.path.join(os.path.dirname(GUARD), "rules.json")) as f:
+            cfg = json.load(f)
+        listed = {c["id"]: {k: v for k, v in c.items() if k != "id"} for c in cfg["checks"]}
+        self.assertEqual(listed, builtin)
+        self.assertEqual(len(cfg["rules"]) + len(cfg["checks"]), 12)
+
+    def test_repo_override_turns_force_push_into_ask(self):
+        p = project_with("p-ask", {"checks": [{"id": "force-push", "decision": "ask"}]})
+        _, decision, reason = bash("git push --force origin main", cwd=p)
+        self.assertEqual(decision, "ask")
+        self.assertIn("guardrails [force-push]: force-push to a protected branch: 'main'", reason)
+        self.assertIn("Use --force-with-lease on your own branch.", reason)  # instead kept
+
+    def test_custom_instead_message_comes_through(self):
+        p = project_with("p-instead", {"checks": [
+            {"id": "rm-recursive", "instead": "Run scripts/clean.sh instead."},
+            {"id": "kubectl-prod", "no_context": {"decision": "deny", "reason": "pick a context first"}},
+        ]})
+        _, decision, reason = bash("rm -rf /etc/nginx", cwd=p)
+        self.assertEqual(decision, "deny")
+        self.assertIn("Instead: Run scripts/clean.sh instead.", reason)
+        _, decision, reason = bash("kubectl delete pod x", cwd=p)
+        self.assertEqual(decision, "deny")
+        self.assertIn("guardrails [kubectl-prod]: pick a context first.", reason)
+        self.assertIn("Instead: Show me the exact command and target", reason)
+
+    def test_malformed_checks_are_skipped_not_fatal(self):
+        p = project_with("p-bad", {"checks": ["force-push", {"id": "nope", "decision": "ask"},
+                                              {"id": "force-push", "decision": "allow"}]})
+        code, decision, _ = bash("git push --force origin main", cwd=p)
+        self.assertEqual((code, decision), (0, "deny"))  # built-in decision kept, nothing crashed
+        p = project_with("p-bad2", {"checks": {"id": "force-push", "decision": "ask"}})
+        self.assertEqual(bash("git push --force origin main", cwd=p)[:2], (0, "deny"))
+
+    def test_disable_still_works_for_checks(self):
+        p = project_with("p-off", {"disable": ["force-push"],
+                                   "checks": [{"id": "force-push", "decision": "ask"}]})
+        self.assertEqual(bash("git push --force origin main", cwd=p)[1], None)
+
+    def test_old_rules_json_without_checks_still_works(self):
+        d = os.path.join(TMP, "old-install")
+        os.makedirs(d)
+        shutil.copy(GUARD, d)
+        with open(os.path.join(os.path.dirname(GUARD), "rules.json")) as f:
+            cfg = json.load(f)
+        del cfg["checks"]
+        with open(os.path.join(d, "rules.json"), "w") as f:
+            json.dump(cfg, f)
+        old = os.path.join(d, "guard.py")
+        code, decision, reason = bash("git push --force origin main", guard=old)
+        self.assertEqual((code, decision), (0, "deny"))
+        self.assertIn("guardrails [force-push]: force-push to a protected branch", reason)
+        self.assertEqual(bash("rm -rf /etc/nginx", guard=old)[1], "deny")
+        self.assertEqual(bash("kubectl --context=prod-eu delete deploy x", guard=old)[1], "deny")
+        self.assertEqual(bash("kubectl delete pod x", guard=old)[1], "ask")
+        settings = os.path.join(CLAUDE_DIR, "settings.json")
+        self.assertEqual(run({"file_path": settings, "content": "{}"}, tool="Write", guard=old)[1], "ask")
 
 
 class Failure(unittest.TestCase):
