@@ -63,27 +63,60 @@ Commands are checked as a whole **and** split on `;`, `&&`, `||`, `|`, so `cd sr
 
 ## Configure
 
-Overrides are merged on top of `rules.json`:
+**You don't need to configure anything.** Out of the box the hook uses the defaults in `rules.json`. Don't edit that file: the installer overwrites it on every update.
 
-- `~/.claude/guardrails.json` — just you
-- `<repo>/.claude/guardrails.json` — the whole team (commit it)
+To change something, create an **override file** yourself. The installer never creates one. It holds only the settings you want to change:
 
+| File | Applies to | Create it when |
+|---|---|---|
+| `~/.claude/guardrails.json` (Windows: `C:\Users\<you>\.claude\guardrails.json`) | you, in every project | a default gets in your way |
+| `<repo>/.claude/guardrails.json` | everyone who works in that repo (commit it) | a team or repo needs different rules |
+
+Both files are optional and you can have either, both or neither. If both exist, the repo file is read last and wins.
+
+### Start small: one change per file
+
+Each example below is a complete `guardrails.json`. Put in only the keys you need.
+
+Turn a rule off (any of the 12 ids in the [table above](#what-it-guards)):
 ```json
-{
-  "disable": ["git-discard"],
-  "protected_branches": ["main", "release/.*", "hotfix/.*"],
-  "prod_context_pattern": "prod|prd|live|pci",
-  "rules": [
-    {"id": "no-publish", "pattern": "\\bnpm\\s+publish\\b", "decision": "ask",
-     "reason": "publishing a package", "instead": "Bump the version in a PR first."}
-  ],
-  "checks": [
-    {"id": "force-push", "decision": "ask"},
-    {"id": "rm-recursive", "instead": "Run scripts/clean.sh instead."},
-    {"id": "kubectl-prod", "no_context": {"decision": "deny"}}
-  ]
-}
+{ "disable": ["git-discard"] }
 ```
+
+Make a force-push to a protected branch prompt you instead of being blocked:
+```json
+{ "checks": [{"id": "force-push", "decision": "ask"}] }
+```
+
+Protect more branches (this **replaces** the default list, so repeat the ones you want to keep):
+```json
+{ "protected_branches": ["main", "master", "release/.*", "hotfix/.*"] }
+```
+
+Add your own rule:
+```json
+{ "rules": [{"id": "no-publish", "pattern": "\\bnpm\\s+publish\\b", "decision": "ask",
+             "reason": "publishing a package", "instead": "Bump the version in a PR first."}] }
+```
+
+Then check the result without starting Claude. Run it from inside the repo so the repo file is picked up:
+```bash
+python3 ~/.claude/hooks/guardrails/guard.py --test 'git push --force origin main'
+```
+
+On Windows, write the file as UTF-8 (in PowerShell: `Set-Content -Encoding utf8`). If the hook can't read an override file, it blocks every tool call until you fix or delete the file.
+
+### Every key
+
+| Key | What it does | If both files set it |
+|---|---|---|
+| `disable` | Rule ids to switch off | Combined: off in either file means off |
+| `rules` | Extra regex rules ([fields below](#add-a-rule-no-code)) | Combined: all are added |
+| `checks` | Change the decision or message of a code check ([below](#change-a-checks-decision-or-message)) | Merged by id; the repo file wins per field |
+| `protected_branches` | Branch regexes that `force-push` protects | Replaced: the repo file wins |
+| `prod_context_pattern` | Regex for kube contexts that count as prod (default `prod\|prd\|live`) | Replaced |
+| `fail_open` | `true` = on an internal error, allow the call instead of blocking it | Replaced |
+| `audit_log` | Path of the audit log, or `""` to turn it off | Replaced |
 
 ### Change a check's decision or message
 
@@ -94,7 +127,20 @@ Overrides are merged on top of `rules.json`:
 - `instead`: what Claude should do instead.
 - `no_context`: `kubectl-prod` only. It holds the `decision`, `reason` and `instead` used when `kubectl delete` has no `--context`.
 
-In the example above, a force-push to `main` becomes a prompt instead of a block:
+For example:
+```json
+{
+  "checks": [
+    {"id": "force-push", "decision": "ask"},
+    {"id": "rm-recursive", "instead": "Run scripts/clean.sh instead."},
+    {"id": "kubectl-prod", "no_context": {"decision": "deny"}}
+  ]
+}
+```
+In this file:
+- A force-push to `main` prompts you instead of being blocked.
+- `rm -rf` outside the project is still denied, but Claude is told to run your cleanup script.
+- `kubectl delete` with no `--context` is blocked instead of asking.
 
 ```bash
 python3 ~/.claude/hooks/guardrails/guard.py --test 'git push --force origin main'
