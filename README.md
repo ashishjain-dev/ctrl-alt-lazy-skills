@@ -53,6 +53,14 @@ One installer for all of them (`python3 hooks/install.py --list`). Want your own
 | #04 | [`session-archive`](hooks/session-archive/) | `SessionEnd` hook that archives every Claude Code session outside `~/.claude` (beats the ~30-day cleanup), with a searchable cross-project index. Atomic, idempotent, never blocks, private by default. Install: `python3 hooks/install.py session-archive` |
 | #11 | [`guardrails`](hooks/guardrails/) | `PreToolUse` hook that stops irreversible commands before Claude runs them: `DROP TABLE`, `DELETE` without `WHERE`, `terraform destroy`, `kubectl delete` on prod, force-push to protected branches, `rm -rf` outside the project. Denies with a reason Claude acts on, asks for risky-but-legit ones, protects its own config, fails closed, keeps a redacted audit log. A seatbelt, not a sandbox. Install: `python3 hooks/install.py guardrails` |
 
+## Loops
+
+Default prompts for Claude Code's [`/loop`](https://code.claude.com/docs/en/scheduled-tasks): save one as `.claude/loop.md` and a bare `/loop` runs it every pass.
+
+| Reel | Loop | What it does |
+|---|---|---|
+| /loop Part 2 | [`pr-babysitter`](loops/pr-babysitter/) | Babysits your PR on every `/loop` pass: fixes CI failures that are yours (re-runs flaky jobs once), addresses review comments that ask for code changes and replies to the rest, resolves only mechanical conflicts, updates the linked ticket, and reports in 4 lines. Never force-pushes, merges, skips tests or edits CI config |
+
 More coming with every reel. Follow [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy) so you don't have to check.
 
 ## How a skill works
