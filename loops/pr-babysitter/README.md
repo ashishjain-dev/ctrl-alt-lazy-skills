@@ -2,6 +2,14 @@
 
 From the [@ctrl.alt.lazy](https://instagram.com/ctrl.alt.lazy) reel **/loop Part 2: "Day 400"**. Write your PR routine once, then type a bare `/loop` and Claude Code follows it on every pass: check CI, fix what's yours, answer review comments, keep the ticket current, and tell you what needs a human.
 
+## Before you start
+
+loop.md is only instructions. Claude follows them with the tools your Claude Code session already has, so set these up first:
+
+1. **GitHub CLI, logged in.** Install [`gh`](https://cli.github.com/) and run `gh auth login`. Check with `gh pr checks` on your PR branch. Without it Claude can't see CI or review comments, and the loop will say so and stop.
+2. **Let the loop run without asking every time.** Claude Code asks before running commands. Allow the read and re-run commands this loop uses (`gh pr view`, `gh pr checks`, `gh run view`, `gh run rerun`, `gh api`) and `git push` in your [permission settings](https://code.claude.com/docs/en/settings), or each pass will pause for your approval. Keep force-push and merge un-allowed.
+3. **Other platforms.** GitLab (`glab`), Jenkins, Azure DevOps or Jira need their own CLI or MCP server. The ticket step is skipped if Claude can't reach your tracker.
+
 ## Install
 
 Project-level (recommended, shareable with your team):
